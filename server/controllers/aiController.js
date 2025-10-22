@@ -199,7 +199,7 @@ export const removeImageObject = async (req, res) => {
       resource_type: 'image'
     })
 
-    await sql`INSERT INTO creations (user_id, prompt, content, type) 
+    await sql` INSERT INTO creations (user_id, prompt, content, type) 
     VALUES (${userId}, ${`Removed ${object} from image`}, ${imageUrl}, 'image')`;
 
     if (plan !== 'premium') {
@@ -235,7 +235,7 @@ export const resumeReview = async (req, res) => {
     const dataBuffer = fs.readFileSync(resume.path)
     const pdfData = await pdf(dataBuffer)
 
-    const prompt = `Review the folloing resume and profide constructive feedback on its strengths, weakness, and ares for improvement. Resume Content:\n\n${pdfData.text}`
+    const prompt = `Review the folloing resume and provide constructive feedback on its strengths, weakness, and ares for improvement. Resume Content:\n\n${pdfData.text}`
 
     const response = await AI.chat.completions.create({
       model: "gemini-2.0-flash",
