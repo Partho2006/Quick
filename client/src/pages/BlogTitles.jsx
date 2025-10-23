@@ -1,6 +1,7 @@
 import { Hash, Sparkles } from 'lucide-react'
 import React, { useState } from 'react'
 import Markdown from 'react-markdown';
+import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useAuth } from '@clerk/clerk-react';
 
@@ -23,7 +24,7 @@ const BlogTitles = () => {
 
       const prompt = `Generate a blog title for the keyboard ${input} on the category ${selectedCategory}`
 
-      const { data } = await axios.post('/api/ai/generate-blog-article', { prompt }, {
+      const { data } = await axios.post('/api/ai/generate-blog-title', { prompt }, {
         headers: {
           Authorization: `Bearer ${await getToken()}`
         }
@@ -34,6 +35,7 @@ const BlogTitles = () => {
       } else {
         toast.error(data.message)
       }
+      
     } catch (error) {
       toast.error(error.message)
     }
@@ -93,7 +95,7 @@ const BlogTitles = () => {
       </form>
 
       {/* Right col */}
-      <div className="w-full max-w-lg p-4 bg-white rounded-xl border border-gray-300 shadow-sm flex flex-col min-h-95 items-center">
+      <div className="w-full max-w-lg p-4 bg-white rounded-xl border border-gray-300 shadow-sm flex flex-col min-h-95 items-center mt-0 md:mt-10">
         <div className="flex items-center gap-3 justify-center">
           <Hash className='w-6 h-6 text-purple-600' />
           <h1 className="text-xl font-semibold text-gray-800">Generated Titles</h1>

@@ -44,7 +44,7 @@ const RemoveObject = () => {
       </form>
 
       {/* Right col */}
-      <div className="w-full max-w-lg p-4 bg-white rounded-xl border border-gray-300 shadow-sm flex flex-col min-h-95 items-center">
+      <div className="w-full max-w-lg p-4 bg-white rounded-xl border mt-0 md:mt-10 border-gray-300 shadow-sm flex flex-col min-h-95 items-center">
         <div className="flex items-center gap-3 justify-center">
           <Scissors className='w-6 h-6 text-purple-600' />
           <h1 className="text-xl font-semibold text-gray-800">Processed Image</h1>
