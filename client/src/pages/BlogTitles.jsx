@@ -12,8 +12,8 @@ const BlogTitles = () => {
 
   const [selectedCategory, setSelectedCategory] = useState('General');
   const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false)
-  const [content, setContent] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');
 
   const { getToken } = useAuth()
 
@@ -35,7 +35,7 @@ const BlogTitles = () => {
       } else {
         toast.error(data.message)
       }
-      
+
     } catch (error) {
       toast.error(error.message)
     }

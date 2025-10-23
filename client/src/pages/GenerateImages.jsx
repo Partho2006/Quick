@@ -1,14 +1,51 @@
-import { Hash, Image, Sparkles } from 'lucide-react'
-import React, { useState } from 'react'
+import { Image, Sparkles } from 'lucide-react'
+import React, { useState } from 'react';
+import Markdown from 'react-markdown';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { useAuth } from '@clerk/clerk-react';
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const GenerateImages = () => {
   const imageStyle = ['Realistic', 'Ghibli', 'Anime', 'Cartoon', 'Fantasy', '3D', 'Pixel']
+
   const [selectedStyle, setSelectedStyle] = useState('Realistic');
   const [input, setInput] = useState('');
   const [publish, setPublish] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');
 
-  const onSubmitHandler = (e) => {
+  const { getToken } = useAuth()
+
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
+    try {
+      setLoading(true)
+
+      const prompt = `Generate an image of ${input} in thr style ${selectedStyle}`
+
+      console.log("Sending request to:", axios.defaults.baseURL);
+    console.log("Prompt:", prompt);
+console.log("Publish:", publish);
+console.log("Token:", await getToken());
+
+      const { data } = await axios.post('/api/ai/generate-image', { prompt, publish }, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`
+        }
+      })
+
+      if (data.success) {
+        setContent(data.content)
+      } else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+    setLoading(false)
   }
 
   return (
@@ -21,27 +58,26 @@ const GenerateImages = () => {
         </div>
         <p className="mt-6 text-lg font-semibold text-gray-800">Describe Your Image</p>
 
-        <textarea 
-          onChange={(e) => setInput(e.target.value)} 
-          value={input} 
-          rows={4} 
-          className="w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300 text-gray-700" 
-          placeholder='e.g., A boy playing with a cat...' 
-          required 
+        <textarea
+          onChange={(e) => setInput(e.target.value)}
+          value={input}
+          rows={4}
+          className="w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300 text-gray-700"
+          placeholder='e.g., A boy playing with a cat...'
+          required
         />
 
         <p className="mt-4 text-lg font-medium text-gray-800">Styles</p>
 
         <div className="mt-3 w-full grid grid-cols-2 lg:grid-cols-3 gap-3 text-gray-700">
           {imageStyle.map((item) => (
-            <span 
-              onClick={() => setSelectedStyle(item)} 
-              key={item} 
-              className={`text-xs px-3 py-2 rounded-full cursor-pointer flex justify-center transition-all duration-200 ease-in-out border ${
-                selectedStyle === item
-                  ? 'bg-gradient-to-r from-purple-500 to-indigo-700 text-white font-semibold border-gray-300'
-                  : 'bg-gray-100 hover:bg-gray-200 border-gray-300'
-              }`}
+            <span
+              onClick={() => setSelectedStyle(item)}
+              key={item}
+              className={`text-xs px-3 py-2 rounded-full cursor-pointer flex justify-center transition-all duration-200 ease-in-out border ${selectedStyle === item
+                ? 'bg-gradient-to-r from-purple-500 to-indigo-700 text-white font-semibold border-gray-300'
+                : 'bg-gray-100 hover:bg-gray-200 border-gray-300'
+                }`}
             >
               {item}
             </span>
@@ -76,8 +112,13 @@ const GenerateImages = () => {
           <p className="text-sm text-gray-700 font-semibold">Make this public...</p>
         </div>
 
-        <button className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-purple-600 hover:to-indigo-800 text-white px-4 py-2 mt-6 text-sm rounded-xl cursor-pointer font-semibold shadow hover:shadow-lg transition-transform duration-300 ease-in-out hover:scale-105'>
-          <Image className='w-5' />
+        <button disabled={loading} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-700 hover:from-purple-600 hover:to-indigo-800 text-white px-4 py-2 mt-6 text-sm rounded-xl cursor-pointer font-semibold shadow hover:shadow-lg transition-transform duration-300 ease-in-out hover:scale-105'>
+          {
+            loading ?
+              <span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>
+              :
+              <Image className='w-5' />
+          }
           Generate Image
         </button>
       </form>
@@ -88,13 +129,20 @@ const GenerateImages = () => {
           <Image className='w-6 h-6 text-indigo-500' />
           <h1 className="text-xl font-semibold text-gray-800">Generated Image</h1>
         </div>
-
-        <div className="flex-1 flex justify-center items-center">
-          <div className="text-sm flex flex-col items-center gap-4 text-gray-500">
-            <Image className='w-9 h-9 text-gray-400' />
-            <p>Enter a topic and click "Generate Image" to get started...</p>
-          </div>
-        </div>
+        {
+          !content ? (
+            <div className="flex-1 flex justify-center items-center">
+              <div className="text-sm flex flex-col items-center gap-4 text-gray-500">
+                <Image className='w-9 h-9 text-gray-400' />
+                <p>Enter a topic and click "Generate Image" to get started...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-3 h-full">
+              <img src={content} alt="image" className='w-full h-full' />
+            </div>
+          )
+        }
       </div>
     </div>
   )
