@@ -6,11 +6,8 @@ import {v2 as cloudinary} from 'cloudinary';
 import FormData from 'form-data';
 import fs from 'fs';
 import { createRequire } from "module";
-import * as pdfParse from 'pdf-parse';
-
-const dataBuffer = fs.readFileSync(resume.path);
-const pdfData = await pdfParse(dataBuffer); // pdfData.text contains text
-
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
 
 const AI = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY,
