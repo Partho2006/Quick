@@ -109,7 +109,7 @@ const BlogTitles = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-3 text-sm text-gray-700 overflow-y-auto max-h-[70vh]">
+          <div className="mt-3 text-sm text-gray-700 overflow-y-auto md:max-h-[70vh]">
             <div className="reset-tw">
               <Markdown>{content}</Markdown>
             </div>

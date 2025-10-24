@@ -6,8 +6,11 @@ import {v2 as cloudinary} from 'cloudinary';
 import FormData from 'form-data';
 import fs from 'fs';
 import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const pdf = require("pdf-parse");
+import * as pdfParse from 'pdf-parse';
+
+const dataBuffer = fs.readFileSync(resume.path);
+const pdfData = await pdfParse(dataBuffer); // pdfData.text contains text
+
 
 const AI = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -145,7 +148,7 @@ export const generateImage = async (req, res) => {
 export const removeImageBackground = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
     const free_usage = req.free_usage;
 
@@ -156,8 +159,8 @@ export const removeImageBackground = async (req, res) => {
     const {secure_url} = await cloudinary.uploader.upload(image.path, {
       transformation: [
         {
-          effect: 'backround_removal',
-          backround_removal: 'remove_the_background'
+          effect: 'background_removal',
+          background_removal: 'remove_the_background'
         }
       ]
     })
@@ -184,7 +187,7 @@ export const removeImageObject = async (req, res) => {
   try {
     const { userId } = req.auth();
     const { object } = req.body;
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
     const free_usage = req.free_usage;
 
