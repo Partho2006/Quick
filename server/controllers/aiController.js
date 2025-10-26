@@ -7,7 +7,12 @@ import FormData from 'form-data';
 import fs from 'fs';
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse");
+let pdfParse;
+try {
+  pdfParse = await import('pdf-parse');
+} catch (err) {
+  console.error('PDF parsing disabled:', err.message);
+}
 
 const AI = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY,
